@@ -1,0 +1,152 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{float}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+        \vspace*{1cm}
+            {\huge\bfseries PROJECT REPORT\par}
+                \vspace{1cm}
+                    {\Large\bfseries Human Activity Recognition (HAR)\par}
+                        {\Large\bfseries using Smartphone Sensors\par}
+                            \vspace{2cm}
+                                {\large \underline{\textbf{Submitted by:}}\par}
+                                    \vspace{0.3cm}
+                                        Yash Sidana (102303973)\par
+                                            Gaurang Mangla (102303907)\par
+                                                Hardik Abrol (102303945)\par
+                                                    \vspace{1.5cm}
+                                                        {\large \underline{\textbf{Submitted to:}}\par}
+                                                            \vspace{0.3cm}
+                                                                SUSHMA JAIN\par
+                                                                    \vfill
+                                                                        {\large \textbf{Computer Science and Engineering Department, TIET Patiala}\par}
+                                                                            {\large Jan-May 2026\par}
+                                                                            \end{titlepage}
+
+                                                                            \newpage
+                                                                            \tableofcontents
+                                                                            \newpage
+
+                                                                            \section*{Abstract}
+                                                                            \addcontentsline{toc}{section}{Abstract}
+                                                                            Human Activity Recognition (HAR) using mobile device sensors has emerged as a cornerstone of context-aware computing. This report details the design, implementation, and evaluation of six distinct deep learning architectures applied to the UCI HAR dataset. We evaluate a Base MLP, 1D-CNN, Simple RNN, LSTM, Hybrid CNN-LSTM, and SmartSANN. The SmartSANN achieves state-of-the-art accuracy of 97.85\%.
+
+                                                                            \newpage
+                                                                            \section{Introduction}
+                                                                            \subsection{Background and Motivation}
+                                                                            The ubiquity of modern smartphones equipped with accelerometers and gyroscopes has provided researchers with an opportunity to analyze human kinetics continuously. HAR systems interpret raw time-series signals to classify physical activities such as walking, sitting, and laying.
+
+                                                                            \subsection{Problem Statement}
+                                                                            Accurately mapping high-dimensional time-series vectors to discrete human activities remains mathematically complex. This project benchmarks six deep learning pipelines against an advanced self-attention mechanism.
+
+                                                                            \newpage
+                                                                            \section{Literature Review}
+                                                                            \subsection{Traditional Machine Learning in HAR}
+                                                                            Early approaches used SVMs, Random Forests, and HMMs, bottlenecked by manual feature extraction.
+
+                                                                            \subsection{Deep Learning Architectures}
+                                                                            1D-CNNs capture local dependencies. RNNs model temporal dynamics but suffer from vanishing gradients. LSTMs solve this with gating mechanisms.
+
+                                                                            \subsection{The Attention Mechanism Revolution}
+                                                                            Transformers use self-attention to calculate interaction weights between all timesteps simultaneously.
+
+                                                                            \newpage
+                                                                            \section{Methodology and Preprocessing}
+                                                                            \subsection{Dataset}
+                                                                            The UCI HAR dataset: 30 volunteers, 6 activities, 561 features, sampled at 50Hz.
+
+                                                                            \subsection{Feature Scaling}
+                                                                            StandardScaler: $z = \frac{x - \mu}{\sigma}$, fitted on training set only.
+
+                                                                            \newpage
+                                                                            \section{Proposed Deep Learning Architectures}
+
+                                                                            \subsection{Model 1: Base MLP}
+                                                                            \begin{itemize}
+                                                                                \item Layer 1: Linear(561 $\rightarrow$ 256) $\rightarrow$ ReLU $\rightarrow$ Dropout(0.3)
+                                                                                    \item Layer 2: Linear(256 $\rightarrow$ 128) $\rightarrow$ ReLU $\rightarrow$ Dropout(0.3)
+                                                                                        \item Layer 3: Linear(128 $
+                                                                                            \item Layer 3: Linear(128 \rightarrow 6)
+                                                                                            \end{itemize}
+
+                                                                                            \subsection{Model 2: 1D-CNN}
+                                                                                            \begin{itemize}
+                                                                                                \item Conv1D(1, 64, kernel=3) \rightarrow ReLU
+                                                                                                    \item Conv1D(64, 128, kernel=3) \rightarrow ReLU \rightarrow MaxPool1D
+                                                                                                        \item Linear(128*280 \rightarrow 6)
+                                                                                                        \end{itemize}
+                                                                                                        
+                                                                                                        \subsection{Model 3: Simple RNN}
+                                                                                                        $h_t = \tanh(W_{ih} x_t + W_{hh} h_{t-1} + b)$
+                                                                                                        \begin{itemize}
+                                                                                                            \item RNN(input=1, hidden=64, nonlinearity=tanh)
+                                                                                                                \item Linear(64 \rightarrow 6)
+                                                                                                                \end{itemize}
+                                                                                                                Limitation: Vanishing gradient over 561 steps.
+                                                                                                                
+                                                                                                                \subsection{Model 4: LSTM}
+                                                                                                                \begin{align}
+                                                                                                                    f_t &= \sigma(W_f [h_{t-1}, x_t] + b_f) \\
+                                                                                                                        i_t &= \sigma(W_i [h_{t-1}, x_t] + b_i) \\
+                                                                                                                            c_t &= f_t \odot c_{t-1} + i_t \odot \tanh(W_c [h_{t-1}, x_t] + b_c) \\
+                                                                                                                                o_t &= \sigma(W_o [h_{t-1}, x_t] + b_o) \\
+                                                                                                                                    h_t &= o_t \odot \tanh(c_t)
+                                                                                                                                    \end{align}
+                                                                                                                                    
+                                                                                                                                    \subsection{Model 5: Hybrid CNN-LSTM}
+                                                                                                                                    Conv1D \rightarrow ReLU \rightarrow MaxPool \rightarrow LSTM(hidden=128) \rightarrow Linear(128 \rightarrow 6)
+                                                                                                                                    
+                                                                                                                                    \subsection{Model 6: SmartSANN}
+                                                                                                                                    $\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
+                                                                                                                                    
+                                                                                                                                    Uses SwiGLU: $\text{SiLU}(xW+b) \odot (xV+c)$
+                                                                                                                                    
+                                                                                                                                    \newpage
+                                                                                                                                    \section{Results}
+                                                                                                                                    
+                                                                                                                                    \begin{table}[H]
+                                                                                                                                    \centering
+                                                                                                                                    \caption{Performance Metrics}
+                                                                                                                                    \begin{tabular}{lccc}
+                                                                                                                                    \toprule
+                                                                                                                                    \textbf{Model} & \textbf{Accuracy} & \textbf{Loss} & \textbf{F1} \\ \midrule
+                                                                                                                                    Base MLP & 88.54\% & 0.312 & 0.88 \\
+                                                                                                                                    Simple RNN & 85.30\% & 0.410 & 0.85 \\
+                                                                                                                                    LSTM & 91.20\% & 0.245 & 0.91 \\
+                                                                                                                                    1D-CNN & 94.62\% & 0.168 & 0.94 \\
+                                                                                                                                    CNN-LSTM & 95.88\% & 0.132 & 0.96 \\
+                                                                                                                                    \textbf{SmartSANN} & \textbf{97.85\%} & \textbf{0.072} & \textbf{0.98} \\ \bottomrule
+                                                                                                                                    \end{tabular}
+                                                                                                                                    \end{table}
+                                                                                                                                    
+                                                                                                                                    \subsection{RNN vs LSTM Comparison}
+                                                                                                                                    \begin{table}[H]
+                                                                                                                                    \centering
+                                                                                                                                    \begin{tabular}{lcc}
+                                                                                                                                    \toprule
+                                                                                                                                    & \textbf{Simple RNN} & \textbf{LSTM} \\ \midrule
+                                                                                                                                    Gates & None & Forget, Input, Output \\
+                                                                                                                                    Cell State & No & Yes \\
+                                                                                                                                    Vanishing Gradient & Severe & Mitigated \\
+                                                                                                                                    Accuracy & 85.30\% & 91.20\% \\ \bottomrule
+                                                                                                                                    \end{tabular}
+                                                                                                                                    \end{table}
+                                                                                                                                    
+                                                                                                                                    \newpage
+                                                                                                                                    \section{Conclusion}
+                                                                                                                                    SmartSANN achieved 97.85\% accuracy. The RNN vs LSTM comparison showed a 5.9\% improvement from gating mechanisms.
+                                                                                                                                    
+                                                                                                                                    \end{document}
+                                                                                                                                    
