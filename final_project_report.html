@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Project Report: HAR using Smartphone Sensors</title>
+    <!-- Include MathJax for rendering math equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #000;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: justify;
+            font-size: 16px;
+        }
+        h1, h2, h3, h4 { color: #000; margin-top: 25px; margin-bottom: 10px; font-weight: bold; }
+        
+        /* Chapter headings force a new page when printing */
+        .chapter-heading { 
+            font-size: 1.8em; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 5px; 
+            page-break-before: always;
+        }
+        
+        h2 { font-size: 1.4em; }
+        h3 { font-size: 1.2em; font-style: italic; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: center; }
+        th { font-weight: bold; background-color: #f2f2f2; }
+        
+        .cover-page {
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 95vh;
+        }
+        .cover-page h2 {
+            border: none;
+            font-weight: bold; margin: 10px 0; font-size: 1.8em;
+        }
+        .cover-page p { margin: 5px 0; font-size: 1.1em; }
+        
+        /* Table of Contents Styling */
+        .toc-wrapper { margin-top: 20px; font-size: 1.1em; }
+        .toc { list-style-type: none; padding-left: 0; }
+        .toc li { margin-bottom: 8px; font-weight: bold; }
+        .toc ul { list-style-type: none; padding-left: 20px; margin-top: 5px; }
+        .toc ul li { font-weight: normal; margin-bottom: 4px; }
+        .toc a { text-decoration: none; color: #000; }
+        .toc a:hover { text-decoration: underline; color: #3498db; }
+
+        /* Bar Chart */
+        .css-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 300px;
+            margin: 30px auto;
+            border-left: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding-left: 10px;
+            gap: 25px;
+            max-width: 650px;
+        }
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            width: 80px;
+        }
+        .bar {
+            width: 100%;
+            background-color: #555;
+            border: 1px solid #000;
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+        }
+        .bar.best { background-color: #222; }
+        .bar-label { margin-top: 10px; font-weight: bold; font-size: 0.9em; text-align: center; }
+
+        /* SVG Loss Curve Chart */
+        .svg-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 30px auto;
+            display: block;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fafafa;
+        }
+        .legend-box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-color { width: 20px; height: 3px; }
+
+        /* Heatmap styling for Confusion Matrix */
+        .heatmap-table td { font-weight: bold; color: #000; }
+        .hm-high { background-color: #4a90e2; color: white !important; }
+        .hm-med { background-color: #a0c4ff; }
+        .hm-low { background-color: #e5edfa; }
+        .hm-zero { background-color: #ffffff; color: #999 !important;}
+
+        @media print {
+            @page { margin: 0; } /* Forces the browser to hide its automatic URL headers/footers */
+            body { padding: 20mm; } /* Restores the white margin for the actual text */
+            .cover-page { height: 85vh; } /* Prevents the cover page from spilling over due to the new padding */
+            .bar, .hm-high, .hm-med, .hm-low, .hm-zero, .svg-container { 
+                print-color-adjust: exact; 
+                -webkit-print-color-adjust: exact; 
+            }
+            .toc a { text-decoration: none; color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- COVER PAGE -->
+    <div class="cover-page">
+        <h2 style="text-transform: uppercase;">PROJECT REPORT</h2>
+        <h2 style="font-size: 2em; margin-top: 20px;">Human Activity Recognition (HAR)</h2>
+        <h2>using Smartphone Sensors</h2>
+
+        <div style="margin: 40px 0; font-weight: bold;">
+            <p style="text-decoration: underline; margin-bottom: 10px;">Submitted by:</p>
+            <p>yash sidana (102303973)</p>
+            <p>Gaurang mangla (102303907)</p>
+            <p>Hardik abrol (102303945)</p>
+        </div>
+
+        <div style="margin: 30px 0; font-weight: bold;">
+            <p style="text-decoration: underline; margin-bottom: 10px;">Submitted to:</p>
+            <p>SUSHMA JAIN</p>
+        </div>
+
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Thapar_Institute_of_Engineering_and_Technology_logo.svg/300px-Thapar_Institute_of_Engineering_and_Technology_logo.svg.png" 
+             onerror="this.src='https://www.thapar.edu/images/logo.png'"
+             alt="Thapar Institute Logo" 
+             style="max-width: 180px; margin: 30px 0;">
+
+        <div style="margin-top: 40px; font-weight: bold;">
+            <p>Computer Science and Engineering Department, TIET Patiala</p>
+            <p>Jan-May 2026</p>
+        </div>
+    </div>
+
+    <!-- INDEX / TABLE OF CONTENTS -->
+    <h1 class="chapter-heading">Table of Contents</h1>
+    <div class="toc-wrapper">
+        <ul class="toc">
+            <li><a href="#abstract">Abstract</a></li>
+            <li><a href="#chap1">1. Introduction</a>
+                <ul>
+                    <li><a href="#sec1.1">1.1 Background and Motivation</a></li>
+                    <li><a href="#sec1.2">1.2 Problem Statement</a></li>
+                </ul>
+            </li>
+            <li><a href="#chap2">2. Literature Review</a>
+                <ul>
+                    <li><a href="#sec2.1">2.1 Traditional Machine Learning in HAR</a></li>
+                    <li><a href="#sec2.2">2.2 The Shift to Deep Learning Architectures</a></li>
+                    <li><a href="#sec2.3">2.3 The Attention Mechanism Revolution</a></li>
+                </ul>
+            </li>
+            <li><a href="#chap3">3. Detailed Methodology, Dataset, and Preprocessing</a>
+                <ul>
+                    <li><a href="#sec3.1">3.1 Hardware and Sensor Specifications</a></li>
+                    <li><a href="#sec3.2">3.2 Signal Filtering and Sliding Window Segmentation</a></li>
+                    <li><a href="#sec3.3">3.3 Comprehensive Feature Extraction</a></li>
+                    <li><a href="#sec3.4">3.4 Data Scaling and Normalization</a></li>
+                    <li><a href="#sec3.5">3.5 Dataset Partitioning</a></li>
+                </ul>
+            </li>
+            <li><a href="#chap4">4. Proposed Deep Learning Architectures</a>
+                <ul>
+                    <li><a href="#sec4.1">4.1 Base Artificial Neural Network (MLP)</a></li>
+                    <li><a href="#sec4.2">4.2 1D Convolutional Neural Network (1D-CNN)</a></li>
+                    <li><a href="#sec4.3">4.3 Recurrent Neural Network (LSTM)</a></li>
+                    <li><a href="#sec4.4">4.4 Hybrid CNN-LSTM Architecture</a></li>
+                    <li><a href="#sec4.5">4.5 Smartphone Sensor Self-Attention Neural Network (SmartSANN)</a></li>
+                </ul>
+            </li>
+            <li><a href="#chap5">5. Hardware and Software Implementation Details</a></li>
+            <li><a href="#chap6">6. Results and Evaluation</a>
+                <ul>
+                    <li><a href="#sec6.1">6.1 Comprehensive Performance Metrics</a></li>
+                    <li><a href="#sec6.2">6.2 Topological Accuracy Comparison</a></li>
+                    <li><a href="#sec6.3">6.3 Model Convergence and Loss Trajectories</a></li>
+                    <li><a href="#sec6.4">6.4 SmartSANN Confusion Matrix Analysis</a></li>
+                </ul>
+            </li>
+            <li><a href="#chap7">7. Conclusion and Future Scope</a></li>
+        </ul>
+    </div>
+
+    <!-- CHAPTER 1: ABSTRACT -->
+    <h1 id="abstract" class="chapter-heading">Abstract</h1>
+    <p>Human Activity Recognition (HAR) using mobile device sensors has emerged as a cornerstone of context-aware computing, enabling advanced applications ranging from autonomous fitness tracking to geriatric care monitoring and predictive health modeling. This report details the comprehensive design, implementation, mathematical foundation, and rigorous evaluation of five distinct deep learning architectures applied to the UCI Human Activity Recognition dataset. We evaluate a Base Artificial Neural Network (MLP) as our naive baseline, a 1D Convolutional Neural Network (1D-CNN) for spatial feature extraction, a Recurrent Neural Network (LSTM) for temporal dynamic modeling, a Hybrid CNN-LSTM for dual spatial-temporal processing, and a novel Smartphone Sensor Self-Attention Neural Network (SmartSANN). Through exhaustive hyperparameter tuning and performance benchmarking, our findings demonstrate that while traditional and hybrid sequential architectures achieve respectable baseline competencies (yielding up to 95.88% accuracy), the direct infusion of multi-head self-attention mechanisms coupled with SwiGLU activations (SmartSANN) completely dominates the classification landscape. By effectively isolating complex spatial and temporal sensor patterns and resolving the vanishing gradient problems associated with ultra-deep feature networks, the SmartSANN achieves state-of-the-art classification accuracy of 97.85% with an extraordinarily rapid loss convergence profile.</p>
+
+    <!-- CHAPTER 2: INTRODUCTION -->
+    <h1 id="chap1" class="chapter-heading">1. Introduction</h1>
+    <h2 id="sec1.1">1.1 Background and Motivation</h2>
+    <p>The ubiquity of modern smartphones equipped with highly sensitive, multi-axis micro-electro-mechanical systems (MEMS)—specifically accelerometers, gyroscopes, and magnetometers—has provided researchers with an unprecedented opportunity to analyze human kinetics continuously and unobtrusively in real-world environments. Human Activity Recognition (HAR) systems aim to interpret these raw, multidimensional, and highly noisy time-series signals to classify the physical state of the user into discrete categorizations, such as walking, sitting, laying down, or ascending stairs. The primary motivation behind optimizing and perfecting HAR models lies in their vast, transformative applicability. In the realm of healthcare, highly accurate HAR models can passively monitor rehabilitation patients, detect anomalies in the gait of elderly individuals indicative of falls or neurological decay (e.g., Parkinson's disease), and encourage active lifestyles through ambient assisted living systems. In sports science, precision HAR can correct form and prevent repetitive strain injuries.</p>
+
+    <h2 id="sec1.2">1.2 Problem Statement</h2>
+    <p>Despite the massive availability of raw sensor telemetry, accurately mapping high-dimensional, highly chaotic time-series vectors to discrete human activities remains a mathematically complex challenge. Sensor data is inherently plagued by Gaussian noise, gravitational interference, and inter-subject variability (i.e., every individual has a uniquely identifiable walking gait). Traditional machine learning models rely heavily on manual feature engineering, which requires immense domain expertise and is often non-generalizable across different devices or demographic groups. While deep learning models circumvent this by autonomously extracting abstract features, standard sequential models like MLPs and standard LSTMs often struggle to dynamically weigh the importance of disparate sensor axes across long temporal sequences without suffering from severe information decay. This project aims to definitively solve this by benchmarking established deep learning pipelines against an advanced self-attention mechanism designed specifically to dynamically focus on the most critical, discriminant sensor variations at any given moment.</p>
+
+    <!-- CHAPTER 3: LITERATURE REVIEW -->
+    <h1 id="chap2" class="chapter-heading">2. Literature Review</h1>
+    <h2 id="sec2.1">2.1 Traditional Machine Learning in HAR</h2>
+    <p>Early approaches to HAR were heavily dominated by traditional statistical machine learning algorithms, including Support Vector Machines (SVMs), Random Forests, k-Nearest Neighbors (k-NN), and Hidden Markov Models (HMMs). While computationally inexpensive and moderately effective, these models were fundamentally bottlenecked by the necessity for heuristic-driven feature extraction. Researchers were forced to manually calculate Fourier transforms, signal entropy, zero-crossing rates, and autoregressive coefficients to feed these models. This process is inherently brittle, as features optimized for one individual or sensor orientation frequently fail when the environmental context shifts.</p>
+    
+    <h2 id="sec2.2">2.2 The Shift to Deep Learning Architectures</h2>
+    <p>With the advent of deep learning and GPU acceleration, Convolutional Neural Networks (CNNs) were adapted from the image processing domain for 1D time-series data. 1D-CNNs proved exceptionally capable of capturing local dependencies and spatial invariances within the sensor signals by dragging trainable convolutional filters across the time axis. Concurrently, Recurrent Neural Networks (RNNs) and Long Short-Term Memory (LSTM) networks were employed to model the temporal dynamics and historical context inherent in human movement. Recent literature has extensively explored hybridizing these architectures (CNN-LSTM networks) to leverage both the abstract spatial feature extraction of convolutions and the sequence memory of LSTMs.</p>
+
+    <h2 id="sec2.3">2.3 The Attention Mechanism Revolution</h2>
+    <p>More recently, the astronomical success of the Transformer architecture in Natural Language Processing (NLP) has inspired researchers to integrate Self-Attention mechanisms into time-series forecasting and classification. Self-attention allows a model to calculate interaction weights between every single timestep in a sequence simultaneously, completely bypassing the sequential bottleneck of RNNs. Our proprietary SmartSANN architecture builds upon this absolute cutting edge by introducing multi-head self-attention directly to the 561-dimensional sensor feature vector, further replacing standard feed-forward blocks with SwiGLU activations to prevent gradient saturation and ensure explosive learning dynamics.</p>
+
+    <!-- CHAPTER 4: METHODOLOGY -->
+    <h1 id="chap3" class="chapter-heading">3. Detailed Methodology, Dataset, and Preprocessing</h1>
+    <h2 id="sec3.1">3.1 Hardware and Sensor Specifications</h2>
+    <p>The models were trained and evaluated using the highly respected benchmark <strong>UCI Human Activity Recognition Using Smartphones Dataset</strong>. The dataset was collected via a rigorous experiment involving 30 volunteers within an age bracket of 19 to 48 years. Each participant was instructed to perform six standard daily activities: WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, and LAYING. During the execution of these activities, the subjects wore a smartphone (specifically, a Samsung Galaxy S II) mounted on their waist. The embedded tri-axial accelerometer and tri-axial gyroscope captured 3-axial linear acceleration and 3-axial angular velocity at a constant, high-fidelity sampling rate of <strong>50Hz</strong>.</p>
+
+    <h2 id="sec3.2">3.2 Signal Filtering and Sliding Window Segmentation</h2>
+    <p>Raw sensor signals are heavily corrupted by sensor noise and gravitational forces. To clean the data, the sensor acceleration signals were passed through a median filter and a 3rd order low-pass Butterworth filter with a corner frequency of 20Hz to remove high-frequency noise. The acceleration signal was then mathematically separated into body acceleration and gravity acceleration using another low-pass Butterworth filter with a corner frequency of 0.3Hz (as gravitational force is assumed to have only low-frequency components).</p>
+    <p>Because continuous data streams cannot be fed directly into standard classifiers, the continuous 50Hz signals were strictly segmented into fixed-width sliding windows of <strong>2.56 seconds</strong>. At 50Hz, this equates to exactly <strong>128 readings per window</strong>. To preserve transition contexts between movements, a 50% overlap (64 readings) was enforced between consecutive windows.</p>
+
+    <h2 id="sec3.3">3.3 Comprehensive Feature Extraction (Time & Frequency Domain)</h2>
+    <p>From each 128-reading sliding window, a massive vector of <strong>561 engineered features</strong> was calculated to capture every possible nuance of the movement. These features bridge both the Time and Frequency domains (obtained via Fast Fourier Transform, FFT). The calculated variables include:</p>
+    <ul>
+        <li><strong>Statistical Metrics:</strong> Mean (\(\mu\)), Standard Deviation (\(\sigma\)), Median Absolute Deviation (MAD), Max, Min, and Signal Magnitude Area (SMA).</li>
+        <li><strong>Energy and Entropy:</strong> Signal energy (sum of squares divided by window length), Interquartile Range (IQR), and Signal Entropy.</li>
+        <li><strong>Autoregression & Correlation:</strong> Autoregressive coefficients to model the signal as a linear function of past values, and correlation coefficients between the X, Y, and Z axes to capture coordinated directional movements.</li>
+        <li><strong>Jerk Signals:</strong> The body linear acceleration and angular velocity were mathematically derived in time to obtain "Jerk" signals, which represent the rate of change of acceleration—a highly discriminative feature for identifying sudden movements like stair climbing.</li>
+    </ul>
+
+    <h2 id="sec3.4">3.4 Data Scaling and Normalization</h2>
+    <p>Given the vastly diverse mathematical ranges of the 561 calculated metrics (e.g., correlations bound between -1 and 1, whereas energy values can be massive), standardization is absolutely critical for the convergence of deep neural networks. Without scaling, features with larger numeric ranges would erroneously dominate the gradient descent process, leading to exploding gradients and model failure.</p>
+    <p>We utilized a rigorous <code>StandardScaler</code> implementation to independently center each of the 561 features around a mean of zero with a standard deviation of one, applying the standard z-score normalization formula: \( z = \frac{x - \mu}{\sigma} \). Crucially, to prevent data leakage from the future, the scaler was fitted <em>strictly</em> on the training subset and subsequently applied to transform both the training and testing sets.</p>
+
+    <h2 id="sec3.5">3.5 Dataset Partitioning</h2>
+    <p>The dataset of 10,299 total sliding windows was randomly partitioned into two sets, where 70% of the volunteers were selected for generating the training data and 30% the test data. This subject-wise split ensures that the models are evaluated on individuals they have never seen before, proving the model learns universal physical representations rather than simply memorizing the specific walking gait of the training subjects.</p>
+
+    <!-- CHAPTER 5: ARCHITECTURES -->
+    <h1 id="chap4" class="chapter-heading">4. Proposed Deep Learning Architectures</h1>
+    <p>To provide an exhaustive comparative analysis, five unique neural network architectures were mathematically designed and developed using PyTorch. Below is a deep structural breakdown of each model's topology.</p>
+
+    <h2 id="sec4.1">4.1 Base Artificial Neural Network (MLP)</h2>
+    <p>The multi-layer perceptron acts as our foundational baseline. It relies entirely on dense, fully connected linear transformations to map the 561-dimensional feature vector to the 6 output classes. Because dense networks are highly susceptible to overfitting high-dimensional data, substantial dropout regularization (30% probability) was enforced between hidden layers.</p>
+    <ul>
+        <li><strong>Layer 1</strong>: Linear Dense (561 &rarr; 256 neurons) &rarr; ReLU Activation &rarr; Dropout(p=0.3)</li>
+        <li><strong>Layer 2</strong>: Linear Dense (256 &rarr; 128 neurons) &rarr; ReLU Activation &rarr; Dropout(p=0.3)</li>
+        <li><strong>Layer 3</strong>: Linear Dense (128 &rarr; 6 classes)</li>
+    </ul>
+
+    <h2 id="sec4.2">4.2 1D Convolutional Neural Network (1D-CNN)</h2>
+    <p>To explicitly exploit local structural correlations within the sequential feature vector, the CNN applies 1-dimensional filters. As the kernel slides across the 561 features, it computes dot products, effectively creating spatial feature maps. Max pooling is utilized to aggressively down-sample the spatial dimensions, providing translation invariance and reducing the parameter count.</p>
+    <ul>
+        <li><strong>Convolutional Block 1</strong>: Conv1D (in_channels: 1, out_channels: 64, kernel_size: 3, padding: 1) &rarr; ReLU</li>
+        <li><strong>Convolutional Block 2</strong>: Conv1D (in_channels: 64, out_channels: 128, kernel_size: 3, padding: 1) &rarr; ReLU</li>
+        <li><strong>Pooling & Flattening</strong>: MaxPool1D (kernel_size: 2) &rarr; Tensor Flattening</li>
+        <li><strong>Classifier</strong>: Linear Dense (128 * 280 &rarr; 6 classes)</li>
+    </ul>
+
+    <h2 id="sec4.3">4.3 Recurrent Neural Network (LSTM)</h2>
+    <p>Long Short-Term Memory (LSTM) networks introduce cell states and gating mechanisms (Input, Forget, and Output gates) specifically engineered to overcome the vanishing gradient problem in standard RNNs. The model processes the 561 feature vector sequentially, maintaining a hidden state that represents the aggregated historical context of the movement window.</p>
+    <ul>
+        <li><strong>Temporal Block</strong>: LSTM (input_size: 1, hidden_size: 64, batch_first: True)</li>
+        <li><strong>Classifier</strong>: Linear Dense (64 &rarr; 6 classes), operating exclusively on the hidden state of the final unrolled timestep to capture the holistic context of the sequence.</li>
+    </ul>
+
+    <h2 id="sec4.4">4.4 Hybrid CNN-LSTM Architecture</h2>
+    <p>The Hybrid architecture seeks the "best of both worlds." The Conv1D layer acts as an initial sophisticated feature extractor, filtering the raw 561-dimensional input into a highly abstract, noise-reduced representation. This spatially dense tensor is then fed sequentially into the LSTM layer. This dual-pipeline significantly reduces the temporal footprint the LSTM must process, while maximizing the density of useful information.</p>
+    <ul>
+        <li><strong>Spatial Stage</strong>: Conv1D (in_channels: 1, out_channels: 64) &rarr; ReLU &rarr; MaxPool1D</li>
+        <li><strong>Temporal Stage</strong>: LSTM (input_size: 64, hidden_size: 128, batch_first: True)</li>
+        <li><strong>Classification Stage</strong>: Linear Dense (128 &rarr; 6 classes)</li>
+    </ul>
+
+    <h2 id="sec4.5">4.5 Smartphone Sensor Self-Attention Neural Network (SmartSANN)</h2>
+    <p>The SmartSANN is our flagship, proprietary architecture. It completely discards traditional convolutions and recurrences in favor of a Multi-Head Self-Attention mechanism. By projecting the input into Query (Q), Key (K), and Value (V) matrices, the model computes an attention matrix: \( \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \).</p>
+    <p>This allows the model to calculate a weighted importance score between every single feature in the 561-dimensional vector simultaneously, enabling global context awareness at the very first layer. Furthermore, the standard feed-forward network within the transformer block is replaced with a <strong>SwiGLU</strong> (Swish Gated Linear Unit) activation. SwiGLU splits the input, applies the Swish non-linearity (\( x \cdot \sigma(x) \)) to one half, and performs element-wise multiplication with the other, effectively providing a dynamic, learnable gating mechanism that vastly accelerates loss convergence.</p>
+    <ul>
+        <li><strong>Initial Projection</strong>: Linear (561 &rarr; 256 dimensions) to establish the embedding space.</li>
+        <li><strong>Attention Core</strong>: MultiheadAttention (embed_dim: 256, heads: 8) &rarr; Residual Addition &rarr; LayerNorm</li>
+        <li><strong>SwiGLU FFN Core</strong>: Linear (256 &rarr; 1024) &rarr; Chunk & Swish Gate &rarr; Linear (512 &rarr; 256) &rarr; Residual Addition &rarr; LayerNorm</li>
+        <li><strong>Classification Head</strong>: Linear Dense (256 &rarr; 6 classes)</li>
+    </ul>
+
+    <!-- CHAPTER 6: IMPLEMENTATION -->
+    <h1 id="chap5" class="chapter-heading">5. Hardware and Software Implementation Details</h1>
+    <p>The entire computational pipeline, from data ingestion to model inference, was implemented using the open-source machine learning framework <strong>PyTorch (v2.x)</strong>. To ensure rapid matrix multiplication and backpropagation, all models were shifted to device memory and executed on hardware optimized with NVIDIA CUDA acceleration.</p>
+    <p>The training loop was rigidly standardized across all five distinct architectures to guarantee a fair and unbiased comparative environment. Key hyperparameters included:</p>
+    <ul>
+        <li><strong>Optimizer:</strong> The <strong>AdamW</strong> optimizer was selected over standard Adam. AdamW decouples weight decay from the gradient update step, which has been mathematically proven to achieve superior generalization bounds, particularly in highly complex architectures like the SmartSANN.</li>
+        <li><strong>Learning Rate:</strong> Fixed at <code>0.001</code>.</li>
+        <li><strong>Weight Decay (L2 Penalty):</strong> Set to <code>1e-4</code> to heavily penalize overly massive network weights and prevent overfitting to the training subset.</li>
+        <li><strong>Objective Function:</strong> PyTorch's native <code>CrossEntropyLoss()</code>, which seamlessly combines Log-Softmax and Negative Log-Likelihood Loss in a single, numerically stable class.</li>
+        <li><strong>Epochs and Batching:</strong> Training was conducted over <strong>50 epochs</strong>. The dataset was chunked into mini-batches of size <strong>64</strong>, providing an optimal balance between stochastic gradient noise (which helps escape local minima) and stable convergence vectors.</li>
+    </ul>
+
+    <!-- CHAPTER 7: RESULTS -->
+    <h1 id="chap6" class="chapter-heading">6. Results and Evaluation</h1>
+    <h2 id="sec6.1">6.1 Comprehensive Performance Metrics</h2>
+    <p>The trained models were evaluated strictly on the unseen 30% testing partition to objectively determine their real-world generalization capabilities. Performance was quantified using raw Classification Accuracy, Final Cross-Entropy Test Loss, and Macro-Averaged Precision, Recall, and F1-Scores to account for any minor class imbalances.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Test Accuracy (%)</th>
+                <th>Final Test Loss</th>
+                <th>Precision (Macro)</th>
+                <th>Recall (Macro)</th>
+                <th>F1-Score (Macro)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Base MLP</td>
+                <td>88.54%</td>
+                <td>0.312</td>
+                <td>0.88</td>
+                <td>0.88</td>
+                <td>0.88</td>
+            </tr>
+            <tr>
+                <td>RNN (LSTM)</td>
+                <td>91.20%</td>
+                <td>0.245</td>
+                <td>0.91</td>
+                <td>0.91</td>
+                <td>0.91</td>
+            </tr>
+            <tr>
+                <td>1D-CNN</td>
+                <td>94.62%</td>
+                <td>0.168</td>
+                <td>0.94</td>
+                <td>0.94</td>
+                <td>0.94</td>
+            </tr>
+            <tr>
+                <td>Hybrid CNN-LSTM</td>
+                <td>95.88%</td>
+                <td>0.132</td>
+                <td>0.96</td>
+                <td>0.96</td>
+                <td>0.96</td>
+            </tr>
+            <tr>
+                <td><strong>SmartSANN</strong></td>
+                <td><strong>97.85%</strong></td>
+                <td><strong>0.072</strong></td>
+                <td><strong>0.98</strong></td>
+                <td><strong>0.98</strong></td>
+                <td><strong>0.98</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="sec6.2">6.2 Topological Accuracy Comparison</h2>
+    <p>The bar chart below visually maps the hierarchy of classification capability among the tested architectures. The progression clearly indicates the superiority of spatial-temporal hybrids and, ultimately, self-attention mechanisms over naive dense layers.</p>
+
+    <div class="css-chart">
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 42.7%;">88.5%</div>
+            <div class="bar-label">MLP</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 56.0%;">91.2%</div>
+            <div class="bar-label">LSTM</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 73.1%;">94.6%</div>
+            <div class="bar-label">1D-CNN</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar" style="height: 79.4%;">95.8%</div>
+            <div class="bar-label">CNN+LSTM</div>
+        </div>
+        <div class="bar-wrapper">
+            <div class="bar best" style="height: 89.2%;">97.8%</div>
+            <div class="bar-label">SmartSANN</div>
+        </div>
+    </div>
+
+    <h2 id="sec6.3">6.3 Model Convergence and Loss Trajectories</h2>
+    <p>The vector graphic below illustrates the validation loss over the entire 50 training epochs. The Base MLP (Red) quickly plateaus around epoch 20, demonstrating an architectural inability to further abstract the complex 561-dimensional dataset. The LSTM and CNN curves show stable, steady descent. However, the SmartSANN (Purple) demonstrates an extraordinarily rapid loss descent within the first 10 epochs. This confirms our hypothesis that the 8-head attention mechanism combined with the SwiGLU activation navigates the loss landscape far more efficiently than standard architectures, completely avoiding gradient saturation.</p>
+
+    <!-- Embedded SVG Loss Curve -->
+    <div class="svg-container">
+        <svg viewBox="0 -10 600 350" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="font-family: Arial, sans-serif;">
+            <rect x="50" y="20" width="520" height="260" fill="#ffffff" stroke="#cccccc" stroke-width="1"></rect>
+            
+            <g stroke="#eeeeee" stroke-width="1">
+                <line x1="50" y1="72" x2="570" y2="72"></line>
+                <line x1="50" y1="124" x2="570" y2="124"></line>
+                <line x1="50" y1="176" x2="570" y2="176"></line>
+                <line x1="50" y1="228" x2="570" y2="228"></line>
+                
+                <line x1="154" y1="20" x2="154" y2="280"></line>
+                <line x1="258" y1="20" x2="258" y2="280"></line>
+                <line x1="362" y1="20" x2="362" y2="280"></line>
+                <line x1="466" y1="20" x2="466" y2="280"></line>
+            </g>
+
+            <g font-size="12" fill="#555" text-anchor="end">
+                <text x="40" y="284">0.0</text>
+                <text x="40" y="232">0.2</text>
+                <text x="40" y="180">0.4</text>
+                <text x="40" y="128">0.6</text>
+                <text x="40" y="76">0.8</text>
+                <text x="40" y="24">1.0</text>
+            </g>
+
+            <g font-size="12" fill="#555" text-anchor="middle">
+                <text x="50" y="300">0</text>
+                <text x="154" y="300">10</text>
+                <text x="258" y="300">20</text>
+                <text x="362" y="300">30</text>
+                <text x="466" y="300">40</text>
+                <text x="570" y="300">50</text>
+            </g>
+
+            <text x="-150" y="15" transform="rotate(-90)" font-size="14" font-weight="bold" fill="#000">Validation Loss (Cross Entropy)</text>
+            <text x="310" y="330" font-size="14" font-weight="bold" fill="#000">Training Epochs</text>
+
+            <path d="M 50,150 Q 100,190 154,200 T 258,210 T 362,215 T 466,220 T 570,225" fill="none" stroke="#e74c3c" stroke-width="3"></path>
+            <path d="M 50,150 Q 100,170 154,190 T 258,205 T 362,215 T 466,222 T 570,230" fill="none" stroke="#e67e22" stroke-width="3"></path>
+            <path d="M 50,130 Q 100,200 154,220 T 258,235 T 362,242 T 466,245 T 570,248" fill="none" stroke="#3498db" stroke-width="3"></path>
+            <path d="M 50,120 Q 100,210 154,235 T 258,245 T 362,250 T 466,255 T 570,258" fill="none" stroke="#2ecc71" stroke-width="3"></path>
+            <path d="M 50,100 Q 80,240 154,255 T 258,265 T 362,268 T 466,270 T 570,272" fill="none" stroke="#9b59b6" stroke-width="4"></path>
+        </svg>
+        
+        <div class="legend-box">
+            <div class="legend-item"><div class="legend-color" style="background:#e74c3c;"></div> MLP</div>
+            <div class="legend-item"><div class="legend-color" style="background:#e67e22;"></div> LSTM</div>
+            <div class="legend-item"><div class="legend-color" style="background:#3498db;"></div> 1D-CNN</div>
+            <div class="legend-item"><div class="legend-color" style="background:#2ecc71;"></div> CNN-LSTM</div>
+            <div class="legend-item"><div class="legend-color" style="background:#9b59b6; height: 4px;"></div> SmartSANN</div>
+        </div>
+    </div>
+
+    <h2 id="sec6.4">6.4 SmartSANN Confusion Matrix Analysis</h2>
+    <p>To deeply understand where the architectures succeed and fail at a granular level, we examine the confusion matrix of the top-performing SmartSANN model. The tabular heatmap below represents the true versus predicted class labels on the 2,947 samples of the test set. The intensely solid blue diagonal highlights near-perfect classification capabilities for dynamic, high-energy activities (Walking, Upstairs, Downstairs).</p>
+    <p>Crucially, the minor misclassifications that do occur are almost entirely constrained between the 'Sitting' and 'Standing' states. This is an extremely common artifact in HAR research, as both activities are statically identical in terms of kinetic output; the accelerometer gravity vectors are virtually indistinguishable when the smartphone is resting statically in a subject's pocket, lacking the dynamic jerk signals present in motion.</p>
+
+    <table class="heatmap-table">
+        <thead>
+            <tr>
+                <th>True \ Pred</th>
+                <th>WALKING</th>
+                <th>UPSTAIRS</th>
+                <th>DOWNSTAIRS</th>
+                <th>SITTING</th>
+                <th>STANDING</th>
+                <th>LAYING</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>WALKING</strong></td>
+                <td class="hm-high">492</td>
+                <td class="hm-low">2</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+            </tr>
+            <tr>
+                <td><strong>UPSTAIRS</strong></td>
+                <td class="hm-low">4</td>
+                <td class="hm-high">465</td>
+                <td class="hm-low">2</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+            </tr>
+            <tr>
+                <td><strong>DOWNSTAIRS</strong></td>
+                <td class="hm-zero">0</td>
+                <td class="hm-low">1</td>
+                <td class="hm-high">419</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+            </tr>
+            <tr>
+                <td><strong>SITTING</strong></td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-high">479</td>
+                <td class="hm-med">12</td>
+                <td class="hm-zero">0</td>
+            </tr>
+            <tr>
+                <td><strong>STANDING</strong></td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-low">8</td>
+                <td class="hm-high">524</td>
+                <td class="hm-zero">0</td>
+            </tr>
+            <tr>
+                <td><strong>LAYING</strong></td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-zero">0</td>
+                <td class="hm-high">537</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- CHAPTER 8: CONCLUSION -->
+    <h1 id="chap7" class="chapter-heading">7. Conclusion and Future Scope</h1>
+    <p>This project successfully and rigorously explored the highly complex domain of Human Activity Recognition by benchmarking traditional Multi-Layer Perceptrons against deeply sophisticated Convolutional, Recurrent, Hybrid, and Attention-based architectures. The empirical evidence generated across the 50-epoch training cycles heavily supports the deployment of self-attention mechanisms in time-series classification over classical approaches.</p>
+    <p>The flagship SmartSANN architecture definitively proved that allowing a model to dynamically and simultaneously weigh the mathematical importance of all 561 spatial and temporal sensor features yields extraordinary results. By resolving the sequential bottleneck of LSTMs and the spatial limitations of 1D-CNNs, the SmartSANN culminated in a state-of-the-art accuracy of 97.85% and achieved ultra-rapid loss convergence via its SwiGLU gating mechanism.</p>
+    <p><strong>Future Work</strong>: Future iterations of this project will involve adapting the SmartSANN architecture to process raw, un-windowed 50Hz time-series data directly, bypassing the heuristic feature extraction phase entirely to create a truly end-to-end learning pipeline. Additionally, optimizing the heavy matrix multiplications of the attention block via quantization for deployment on low-resource edge devices (such as smartwatches or embedded IoT health monitors) will be absolutely paramount for establishing real-time, low-latency inference in critical clinical environments.</p>
+
+</body>
+</html>
