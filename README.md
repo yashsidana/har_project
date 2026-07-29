@@ -1,4 +1,4 @@
-# Human Activity Recognition (HAR) Project
+# Human Activity Recognition (HAR) project
 
 ## Project Overview
 This project classifies daily human activities (such as walking, sitting, standing, etc.) using smartphone accelerometer and gyroscope data from the UCI Machine Learning Repository.
